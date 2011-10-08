@@ -1,51 +1,65 @@
 package simulation;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Random;
 import java.util.Scanner;
 
 public class Simulation 
 {
-	static int numGenerations = 0;
+	static int generationCount = 0;
 	static int generationSize = 0;
 	
-	static Person[][] generations = null;
+	static Person[][] population = null;
 	
 	public static void main(String[] args) 
 	{		
 		Scanner scanner = new Scanner(System.in);
+		Random rand = new Random();
 		System.out.print("How many generations?: ");
-		numGenerations = scanner.nextInt();
+		generationCount = scanner.nextInt();
 		System.out.print("How many people per generation?: ");
 		generationSize = scanner.nextInt();
 		
-		generations = new Person[numGenerations][generationSize];
+		population = new Person[generationCount][generationSize];
 		
-		// Initialize generation 0
-		for (int i = 0; i < generationSize; i++)
-		{
-			generations[0][i] = new Person(i);
-		}
-		
-		for (int i = 1; i < numGenerations; i++)
+		// Initialize
+		for (int i = 0; i < generationCount; i++)
 		{
 			for (int j = 0; j < generationSize; j++)
-			{				
-				Random rand = new Random();
-				int randIdxA = rand.nextInt(generationSize);
-				int randIdxB = rand.nextInt(generationSize);
-				
-				while(randIdxB == randIdxA)
-					randIdxB = rand.nextInt(generationSize);
-				
-				Person parentA = generations[i-1][randIdxA];
-				Person parentB = generations[i-1][randIdxB];
-				
-				int idx = i * generationSize + j;
-				
-				generations[i][j] = new Person(parentA, parentB, idx);
+			{
+				population[i][j] = new Person();
 			}
 		}
-		System.out.println("Finished");
+		
+		for (int i = generationCount -1 ; i >= 0; i--)
+		{
+			for (int j = 0; j < generationSize; j++)
+			{	
+				Person currentPerson = population[i][j];
+				
+				if (i != 0)
+				{
+					
+					int randIdxA = rand.nextInt(generationSize);
+					int randIdxB = rand.nextInt(generationSize);
+					
+					while(randIdxB == randIdxA)
+						randIdxB = rand.nextInt(generationSize);
+					
+					Person parentA = population[i-1][randIdxA];
+					Person parentB = population[i-1][randIdxB];
+					
+					parentA.children.add(currentPerson);
+					parentB.children.add(currentPerson);
+				}	
+			}			
+		}
+		
+		int diedOut = 0;
+//		for (int i = 0; i < generationSize; i++)
+//		{
+//			if (generations[0][i].newestGenerationDescendants == 0)
+//				diedOut++;
+//		}
+		System.out.print("Finished! " + diedOut);
 	}
 }
