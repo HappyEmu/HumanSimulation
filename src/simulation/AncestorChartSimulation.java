@@ -12,10 +12,9 @@ public class AncestorChartSimulation
 	
 	public static void main(String[] args) throws IOException 
 	{
-		Random rand = new Random();
 		population = new Person[generationCount][generationSize];
 		
-		System.out.println("Generating population...");
+		System.out.println("Initializing population...");
 		
 		// Initialize population
 		for (int i = 0; i < generationCount; i++)
@@ -27,7 +26,22 @@ public class AncestorChartSimulation
 		}
 		
 		System.out.println("Setting up relationships...");
+		setUpRelationships(population);
+
+		System.out.println("Evaluating results...");
+		int[] results = new int[generationSize];
+		evaluateResults(population, results);
 		
+		System.out.println("Writing results to file...");
+		writeResultsToFile(results, 70, false);
+		
+		System.out.println("Done...");
+	}
+	
+	static void setUpRelationships(Person[][] population)
+	{
+		Random rand = new Random();
+
 		// Set up relationships
 		for (int i = generationCount - 1; i > 0; i--)
 		{
@@ -48,18 +62,8 @@ public class AncestorChartSimulation
 				parentB.descendants = (1 + currentPerson.descendants);
 			}			
 		}
-
-		System.out.println("Evaluating results...");
-		
-		int[] results = new int[generationSize];
-		evaluateResults(population, results);
-		
-		System.out.println("Writing results to file...");
-		writeResultsToFile(results, 70, false);
-		
-		System.out.println("Done...");
 	}
-	
+
 	static void evaluateResults(Person[][] population, int[] results) 
 	{
 		for (int i = 0; i < generationSize; i++)
