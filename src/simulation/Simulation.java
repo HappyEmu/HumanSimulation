@@ -2,7 +2,6 @@ package simulation;
 
 import java.io.*;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Simulation 
 {
@@ -13,11 +12,7 @@ public class Simulation
 	
 	public static void main(String[] args) throws IOException 
 	{
-		FileWriter stream = new FileWriter("results.txt", true);
-		BufferedWriter file = new BufferedWriter(stream);
 		Random rand = new Random();
-		System.out.println("Simulation running...");
-		
 		population = new Person[generationCount][generationSize];
 		
 		System.out.println("Generating population...");
@@ -30,7 +25,9 @@ public class Simulation
 				population[i][j] = new Person();
 			}
 		}
+		
 		System.out.println("Setting up relationships...");
+		
 		// Set up relationships
 		for (int i = generationCount -1 ; i > 0; i--)
 		{
@@ -52,22 +49,35 @@ public class Simulation
 
 			}			
 		}
-		System.out.println("Evaluating...");
+
+		System.out.println("Evaluating results...");
+		
 		int[] results = new int[generationSize];
+		evaluateResults(population, results);
+		
+		System.out.println("Writing results to file...");
+		writeResultsToFile(results, 100);
+		
+		System.out.println("Done...");
+	}
+	
+	static void evaluateResults(Person[][] population, int[] results) 
+	{
 		for (int i = 0; i < generationSize; i++)
 		{
 			int currentDescendants = population[0][i].descendants;
 			if (!(currentDescendants > generationSize))
 				results[currentDescendants]++;
 		}
-		int totalDescendants = 0;
-		for (int desc : results)
-		{
-			totalDescendants += desc;
-		}
-		System.out.print("Total descendants in generation 1: " + totalDescendants);
+	}
+
+	static void writeResultsToFile(int[] results, int maxValue) throws IOException
+	{
+		FileWriter stream = new FileWriter("results.txt", true);
+		BufferedWriter file = new BufferedWriter(stream);
+		
 		file.write("New simulation\n");
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < maxValue; i++)
 		{
 			file.write(i + "\tdescendants:\t" + results[i] + "\tpeople\n");
 		}
